@@ -8,6 +8,7 @@ class Application(tk.Frame):
         self.master = master
         self.pack()
         self.create_widgets()
+        self.active_talk_sp = None
 
     def create_widgets(self):
         # self.hi_there = tk.Button(self)
@@ -27,13 +28,13 @@ class Application(tk.Frame):
                               command=self.master.destroy)
         self.quit.pack(side="bottom")
 
-    def say_hi(self):
-        print("hi there, everyone!")
-        subprocess.run(["say", "Hi there"])
-
-    def text_changed(self, *args):
-        subprocess.run(["say", "-v", "Alva", self.text_input.get()])
-
+    def text_changed(self, *args):        
+        if not self.active_talk_sp is None:
+            print(self.active_talk_sp.poll())
+            if self.active_talk_sp.poll() is None:
+                self.active_talk_sp.terminate()
+        self.active_talk_sp = subprocess.Popen(["say", "-v", "Alva", self.text_input.get()])
+        
 
 root = tk.Tk()
 app = Application(master=root)
